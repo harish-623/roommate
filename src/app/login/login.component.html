@@ -1,0 +1,79 @@
+<main class="auth-shell">
+  <section class="auth-art" aria-label="RoomMate">
+    <a class="brand" routerLink="/home">
+      <span class="brand-icon" aria-hidden="true">⌂</span>
+      <span>RoomMate</span>
+    </a>
+
+    <div class="art-copy">
+      <span class="eyebrow">SHARED LIVING, SIMPLIFIED</span>
+      <h1>Good roommates.<br><em>Clear accounts.</em></h1>
+      <p>One simple place to manage rent, groceries and every shared expense.</p>
+      <div class="mini-card">
+        <div class="mini-avatars" aria-hidden="true">
+          <b>R</b><b>A</b><b>K</b><b>S</b>
+        </div>
+        <span>Everything split fairly, every month.</span>
+      </div>
+    </div>
+
+    <div class="art-footer">Made for the people you share a home with.</div>
+  </section>
+
+  <section class="auth-panel" aria-labelledby="login-heading">
+    <div class="auth-form">
+      <span class="eyebrow purple">WELCOME HOME</span>
+      <h2 id="login-heading">Welcome back</h2>
+      <p class="muted">Sign in to manage your household expenses.</p>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmitLogin()">
+        <label for="login-email">Email address</label>
+        <input
+          id="login-email"
+          type="email"
+          formControlName="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+          [class.invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+        >
+        <div class="field-error" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+          Please enter a valid email address.
+        </div>
+
+        <label for="login-password">Password</label>
+        <div class="password-field">
+          <input
+            id="login-password"
+            [type]="showPassword ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="Your password"
+            autocomplete="current-password"
+            [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+          >
+          <button
+            class="password-toggle"
+            type="button"
+            (click)="togglePassword()"
+            [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+          >
+            {{ showPassword ? 'Hide' : 'Show' }}
+          </button>
+        </div>
+        <div class="field-error" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+          <span *ngIf="loginForm.get('password')?.hasError('required')">Password is required.</span>
+          <span *ngIf="loginForm.get('password')?.hasError('minlength')">Password must be at least 6 characters.</span>
+        </div>
+
+        <div class="error" role="alert" *ngIf="loginError">{{ loginError }}</div>
+
+        <button class="primary full" type="submit" [disabled]="loading || loginForm.invalid">
+          {{ loading ? 'Please wait…' : 'Sign in' }} <span aria-hidden="true">→</span>
+        </button>
+      </form>
+
+      <a class="forgot-link" routerLink="/forgot-password">Forgot password?</a>
+      <p class="switch">New to RoomMate? <a routerLink="/register">Create account</a></p>
+      <p class="hint">Your household data is available only after signing in.</p>
+    </div>
+  </section>
+</main>

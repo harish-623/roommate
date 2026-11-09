@@ -1,0 +1,20 @@
+.support-hero {
+  background: #f7f9fc;
+}
+
+.help-card,
+.topic-card {
+  background: #ffffff;
+  border: 1px solid #e8edf3;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.topic-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.topic-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}

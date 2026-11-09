@@ -1,0 +1,20 @@
+.safety-hero {
+  background: #f4fbf7;
+}
+
+.safety-card,
+.safety-info {
+  background: #ffffff;
+  border: 1px solid #dcefe4;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+.safety-info {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.safety-info:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(22, 101, 52, 0.08);
+}

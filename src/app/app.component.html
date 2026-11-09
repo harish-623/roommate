@@ -1,0 +1,70 @@
+<header class="site-header" *ngIf="!isLoginPage && !isHomePage">
+  <div class="site-header__inner">
+    <a class="brand" routerLink="/home" aria-label="VyroPool home" (click)="closeNavigation()">
+      <span class="brand__mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none">
+          <path d="M5 19.5 9.2 11h13.6l4.2 8.5v5H5v-5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M9.3 11 7.5 8h17l-1.8 3M5 19.5h22M9 24.5v2m14-2v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="10" cy="21.5" r="1.5" fill="currentColor"/><circle cx="22" cy="21.5" r="1.5" fill="currentColor"/>
+        </svg>
+      </span>
+      <span class="brand__wordmark">Vyro<span>Pool</span></span>
+    </a>
+
+    <button class="site-menu-toggle" type="button" (click)="toggleNavigation()"
+      [attr.aria-expanded]="navigationOpen" aria-controls="primary-navigation"
+      [attr.aria-label]="navigationOpen ? 'Close navigation menu' : 'Open navigation menu'">
+      <span></span><span></span>
+    </button>
+
+    <nav id="primary-navigation" class="site-nav" [class.site-nav--open]="navigationOpen" aria-label="Main navigation">
+      <div class="site-nav__links">
+        <a routerLink="/home" routerLinkActive="is-active" [routerLinkActiveOptions]="{ exact: true }"
+          (click)="closeNavigation()">Home</a>
+        <a routerLink="/about" routerLinkActive="is-active" (click)="closeNavigation()">About</a>
+        <a routerLink="/help-center" routerLinkActive="is-active" (click)="closeNavigation()">Help</a>
+      </div>
+
+      <div class="site-nav__actions">
+        <ng-container *ngIf="isLoggedIn; else guestActions">
+          <button type="button" class="nav-text-button" (click)="goToProfile()">Profile</button>
+          <button type="button" class="button button--nav" (click)="logout()">Sign out</button>
+        </ng-container>
+        <ng-template #guestActions>
+          <a class="nav-text-button" routerLink="/login" routerLinkActive="is-active" (click)="closeNavigation()">Sign in</a>
+          <a class="button button--nav" routerLink="/register" (click)="closeNavigation()">Get started <span aria-hidden="true">↗</span></a>
+        </ng-template>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<div class="app-main" id="main-content">
+  <router-outlet></router-outlet>
+</div>
+
+<footer class="site-footer" *ngIf="!isLoginPage && !isHomePage">
+  <div class="site-footer__main">
+    <div class="site-footer__brand">
+      <a class="brand brand--footer" routerLink="/home">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none">
+            <path d="M5 19.5 9.2 11h13.6l4.2 8.5v5H5v-5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+            <path d="M9.3 11 7.5 8h17l-1.8 3M5 19.5h22M9 24.5v2m14-2v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="10" cy="21.5" r="1.5" fill="currentColor"/><circle cx="22" cy="21.5" r="1.5" fill="currentColor"/>
+          </svg>
+        </span>
+        <span class="brand__wordmark">Vyro<span>Pool</span></span>
+      </a>
+      <p>Shared living, simplified.</p>
+    </div>
+    <div class="site-footer__links">
+      <div><span class="footer-heading">Explore</span><a routerLink="/home">Household overview</a><a routerLink="/about">About</a></div>
+      <div><span class="footer-heading">Here to help</span><a routerLink="/help-center">Help center</a><a routerLink="/contact-us">Contact us</a></div>
+    </div>
+  </div>
+  <div class="site-footer__bottom">
+    <span>© {{ currentYear }} RoomMate. Shared living, simplified.</span>
+    <a routerLink="/home">Your household <span aria-hidden="true">↗</span></a>
+  </div>
+</footer>

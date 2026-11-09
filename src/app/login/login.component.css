@@ -1,0 +1,377 @@
+:host {
+  display: block;
+  min-height: 100%;
+}
+
+.auth-shell {
+  display: grid;
+  min-height: 100vh;
+  grid-template-columns: minmax(0, 1fr) minmax(420px, 0.9fr);
+  background: #fff;
+}
+
+.auth-art {
+  position: relative;
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: clamp(32px, 6vw, 76px);
+  color: #fff;
+  background:
+    radial-gradient(ellipse at 12% 90%, rgba(181, 133, 255, 0.3), transparent 42%),
+    linear-gradient(145deg, #21183f 0%, #38245e 58%, #563d80 100%);
+}
+
+.auth-art::after {
+  position: absolute;
+  right: -120px;
+  bottom: -180px;
+  width: 440px;
+  height: 440px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  box-shadow: 0 0 0 45px rgba(255, 255, 255, 0.025), 0 0 0 95px rgba(255, 255, 255, 0.02);
+  content: "";
+  pointer-events: none;
+}
+
+.brand {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-family: Manrope, "DM Sans", sans-serif;
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.brand:hover {
+  color: #fff;
+}
+
+.brand-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  font-size: 25px;
+  line-height: 1;
+}
+
+.art-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 520px;
+  padding: 70px 0;
+}
+
+.eyebrow {
+  display: inline-block;
+  color: #e2d5ff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+}
+
+.art-copy h1 {
+  margin: 22px 0 18px;
+  color: #fff;
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.055em;
+}
+
+.art-copy h1 em {
+  color: #d3b8ff;
+  font-style: normal;
+}
+
+.art-copy > p {
+  max-width: 390px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.mini-card {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  gap: 14px;
+  margin-top: 40px;
+  padding: 13px 17px 13px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 12px;
+}
+
+.mini-avatars {
+  display: flex;
+  padding-left: 4px;
+}
+
+.mini-avatars b {
+  display: grid;
+  width: 29px;
+  height: 29px;
+  margin-left: -4px;
+  place-items: center;
+  border: 2px solid #39255e;
+  border-radius: 50%;
+  background: #f0c5a5;
+  color: #38244f;
+  font-size: 10px;
+}
+
+.mini-avatars b:nth-child(2) {
+  background: #c6d9c4;
+}
+
+.mini-avatars b:nth-child(3) {
+  background: #f3d37e;
+}
+
+.mini-avatars b:nth-child(4) {
+  background: #c7b5ed;
+}
+
+.art-footer {
+  position: relative;
+  z-index: 1;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 12px;
+}
+
+.auth-panel {
+  display: grid;
+  min-height: 100%;
+  padding: 56px clamp(28px, 7vw, 100px);
+  place-items: center;
+  background: #fff;
+}
+
+.auth-form {
+  width: min(100%, 390px);
+}
+
+.purple {
+  color: #7956bd;
+}
+
+.auth-form h2 {
+  margin: 12px 0 5px;
+  color: #241d31;
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.045em;
+}
+
+.muted {
+  margin: 0 0 30px;
+  color: #817c89;
+  font-size: 14px;
+}
+
+.auth-form form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-form label {
+  margin: 0 0 8px;
+  color: #393342;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.auth-form input {
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: 20px;
+  padding: 0 14px;
+  border: 1px solid #e6e2eb;
+  border-radius: 9px;
+  outline: none;
+  background: #fff;
+  color: #2b2633;
+  font-size: 14px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.auth-form input::placeholder {
+  color: #aaa5b0;
+}
+
+.auth-form input:focus {
+  border-color: #8a67c7;
+  box-shadow: 0 0 0 3px rgba(138, 103, 199, 0.12);
+}
+
+.auth-form input.invalid {
+  border-color: #c54b58;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field input {
+  padding-right: 66px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 0;
+  right: 10px;
+  height: 48px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: #7956bd;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.field-error {
+  margin: -14px 0 16px;
+  color: #b83e4b;
+  font-size: 12px;
+}
+
+.error {
+  margin: 0 0 16px;
+  padding: 11px 13px;
+  border: 1px solid #f1c8cc;
+  border-radius: 8px;
+  background: #fff2f3;
+  color: #a93340;
+  font-size: 13px;
+}
+
+.primary {
+  display: flex;
+  min-height: 49px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 17px;
+  border: 0;
+  border-radius: 9px;
+  background: #7651b5;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #64419e;
+}
+
+.primary:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+}
+
+.forgot-link {
+  display: block;
+  width: fit-content;
+  margin: 14px 0 27px auto;
+  color: #7956bd;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.switch {
+  margin: 0;
+  padding-top: 22px;
+  border-top: 1px solid #efedf1;
+  color: #797481;
+  font-size: 13px;
+  text-align: center;
+}
+
+.switch a {
+  color: #7956bd;
+  font-weight: 700;
+}
+
+.hint {
+  margin: 15px 0 0;
+  color: #a09ba6;
+  font-size: 11px;
+  text-align: center;
+}
+
+@media (max-width: 800px) {
+  .auth-shell {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 0.9fr);
+  }
+
+  .auth-art {
+    padding: 40px 32px;
+  }
+
+  .auth-panel {
+    padding: 40px 28px;
+  }
+}
+
+@media (max-width: 640px) {
+  .auth-shell {
+    display: block;
+  }
+
+  .auth-art {
+    min-height: 280px;
+    padding: 28px 24px;
+  }
+
+  .art-copy {
+    padding: 42px 0 22px;
+  }
+
+  .art-copy h1 {
+    margin: 14px 0 10px;
+    font-size: 38px;
+  }
+
+  .art-copy > p {
+    max-width: 330px;
+    font-size: 14px;
+  }
+
+  .mini-card,
+  .art-footer {
+    display: none;
+  }
+
+  .auth-panel {
+    min-height: calc(100vh - 280px);
+    padding: 38px 24px 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

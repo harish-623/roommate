@@ -1,0 +1,124 @@
+<div class="container my-5 workspace-page profile-page">
+  <div class="workspace-page__heading">
+    <div>
+      <p class="section-kicker">Your account</p>
+      <h1>Your profile</h1>
+      <p class="workspace-page__description">Keep your details up to date for a smoother ride experience.</p>
+    </div>
+    <span class="workspace-page__mark" aria-hidden="true">✳</span>
+  </div>
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+
+      <div class="card shadow-lg border-0">
+
+        <!-- PROFILE HEADER -->
+        <div class="card-body text-center border-bottom">
+
+          <img [src]="user.imageUrl" class="rounded-circle mb-3" width="120" height="120" alt="Profile" />
+
+          <h4 class="fw-bold mb-1">{{ user.fullname }}</h4>
+          <p class="text-muted mb-1">Age: {{ user.age || 'N/A' }}</p>
+
+          <!-- Upload Button -->
+          <input type="file" accept="image/*" #fileInput hidden (change)="onFileSelected($event)" />
+
+          <button class="btn btn-sm btn-outline-primary mt-2" (click)="fileInput.click()">
+            {{ user.imageUrl ? 'Change Photo' : 'Upload Photo' }}
+          </button>
+        </div>
+
+        <!-- CONTACT INFO -->
+        <div class="card-body">
+
+          <h2 class="profile-section-title">Contact information</h2>
+
+          <ul class="list-group list-group-flush">
+
+            <!-- <li class="list-group-item d-flex justify-content-between">
+              <span class="fw-semibold">Username</span>
+              <span>{{ user.name}}</span>
+            </li> -->
+
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="fw-semibold">Full Name</span>
+              <span>{{ user.fullname }}</span>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="fw-semibold">Email</span>
+              <span>{{ user.email }}</span>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="fw-semibold">Phone</span>
+              <span>{{ user.phone }}</span>
+            </li>
+
+            <li class="list-group-item d-flex justify-content-between">
+              <span class="fw-semibold">Emergency Email</span>
+              <span>{{ user.emergencyContact }}</span>
+            </li>
+
+          </ul>
+
+          <!-- EDIT BUTTON -->
+          <div class="text-end mt-4">
+            <button class="btn btn-primary" (click)="enableEdit()">
+              Edit Profile
+            </button>
+          </div>
+        </div>
+
+        <!-- EDIT FORM -->
+        <div class="card-body border-top" *ngIf="isEditable">
+
+          <h2 class="profile-section-title">Edit profile</h2>
+
+          <form (ngSubmit)="updateUser()">
+
+            <div class="mb-3">
+              <label class="form-label">Full Name</label>
+              <input type="text" class="form-control" [(ngModel)]="user.fullname" name="fullname" />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Phone Number</label>
+              <input type="text" class="form-control" [(ngModel)]="user.phonenumber" name="phonenumber" />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Age</label>
+              <input type="number" class="form-control" [(ngModel)]="user.age" name="age" />
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Emergency Email</label>
+              <input type="email" class="form-control" [(ngModel)]="user.emergencyContact" name="emergencyContact" />
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+              <button type="submit" class="btn btn-success">
+                Save Changes
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div *ngIf="showToast" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1200">
+  <div class="toast show text-white" [ngClass]="{
+      'bg-success': toastType === 'success',
+      'bg-danger': toastType === 'error'
+    }">
+    <div class="toast-body">
+      {{ toastMessage }}
+    </div>
+  </div>
+</div>

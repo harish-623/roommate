@@ -1,0 +1,248 @@
+<section class="register-section">
+  <div class="register-layout">
+    <aside class="register-story">
+      <a class="register-story__back" routerLink="/home"><span aria-hidden="true">←</span> VyroPool</a>
+      <div class="register-story__body">
+        <p class="section-kicker">A seat for everyone</p>
+        <h2>Make the<br />everyday a little<br /><span>more shared.</span></h2>
+        <p>One account opens the door to better journeys, thoughtful connections, and a community moving in the same direction.</p>
+        <div class="register-story__benefits">
+          <span><i aria-hidden="true">✓</i> Meet your community</span>
+          <span><i aria-hidden="true">✓</i> Find rides that fit your day</span>
+          <span><i aria-hidden="true">✓</i> Travel with more confidence</span>
+        </div>
+      </div>
+      <span class="register-story__footer">YOUR NEXT JOURNEY STARTS HERE</span>
+    </aside>
+
+  <div class="register-container">
+    <div class="register-card">
+      <!-- HEADER -->
+      <div class="register-header">
+        <div class="header-content">
+          <p class="register-card__kicker">Join the community</p>
+          <h1 class="register-title">Create your account</h1>
+          <p class="register-subtitle">A few details and you’re on your way.</p>
+        </div>
+        <div class="header-divider"></div>
+      </div>
+
+      <!-- FORM -->
+      <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="register-form">
+
+        <!-- ROW 1: Full Name & Gender -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="register-fullname">Full name</label>
+            <input 
+              id="register-fullname"
+              type="text"
+              class="form-control" 
+              formControlName="fullname" 
+              placeholder="Enter your full name"
+              [class.is-invalid]="userForm.get('fullname')?.invalid && userForm.get('fullname')?.touched"
+            />
+            <div class="error-text" *ngIf="userForm.get('fullname')?.invalid && userForm.get('fullname')?.touched">
+              Full name is required
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="register-gender">Gender</label>
+            <select 
+              id="register-gender"
+              class="form-control form-select" 
+              formControlName="gender"
+              [class.is-invalid]="userForm.get('gender')?.invalid && userForm.get('gender')?.touched"
+            >
+              <option value="" disabled>Select gender</option>
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+              <option value="OTHER">Other</option>
+            </select>
+            <div class="error-text" *ngIf="userForm.get('gender')?.invalid && userForm.get('gender')?.touched">
+              Please select a gender
+            </div>
+          </div>
+        </div>
+
+        <!-- ROW 2: Phone & Age -->
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="register-phone">Phone number</label>
+            <input 
+              id="register-phone"
+              type="tel"
+              class="form-control" 
+              formControlName="phonenumber" 
+              placeholder="10-digit mobile"
+              maxlength="10"
+              inputmode="numeric"
+              (input)="onPhoneInput($event)"
+              [class.is-invalid]="userForm.get('phonenumber')?.invalid && userForm.get('phonenumber')?.touched"
+            />
+            <div class="error-text" *ngIf="userForm.get('phonenumber')?.invalid && userForm.get('phonenumber')?.touched">
+              <div *ngIf="userForm.get('phonenumber')?.errors?.['required']">
+                Phone number is required
+              </div>
+              <div *ngIf="userForm.get('phonenumber')?.errors?.['pattern']">
+                Must be 10 digits
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="register-age">Age</label>
+            <input 
+              id="register-age"
+              type="number"
+              class="form-control" 
+              formControlName="age" 
+              placeholder="18 or above"
+              maxlength="2"
+              inputmode="numeric"
+              (input)="onAgeInput($event)"
+              [class.is-invalid]="userForm.get('age')?.invalid && userForm.get('age')?.touched"
+            />
+            <div class="error-text" *ngIf="userForm.get('age')?.invalid && userForm.get('age')?.touched">
+              <div *ngIf="userForm.get('age')?.errors?.['required']">Age is required</div>
+              <div *ngIf="userForm.get('age')?.errors?.['min']">Minimum age is 18</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- EMAIL + OTP -->
+        <div class="form-group form-group-full">
+          <label class="form-label" for="register-email">Email address</label>
+          <div class="input-group-custom">
+            <input 
+              id="register-email"
+              type="email" 
+              class="form-control" 
+              formControlName="email" 
+              placeholder="your.email@example.com"
+              [class.is-invalid]="userForm.get('email')?.invalid && userForm.get('email')?.touched"
+            />
+            <button 
+              class="btn-otp" 
+              type="button" 
+              (click)="sendOtp()"
+              [disabled]="userForm.get('email')?.invalid || otpSent"
+              [class.otp-sent]="otpSent"
+            >
+              {{ otpSent ? '✓ OTP Sent' : 'Send OTP' }}
+            </button>
+          </div>
+          <div class="error-text" *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+            Please enter a valid email address
+          </div>
+        </div>
+
+        <!-- OTP VERIFICATION -->
+        <div *ngIf="otpSent" class="form-group form-group-full otp-section">
+          <label class="form-label" for="register-otp">Verification code</label>
+          <div class="input-group-custom">
+            <input 
+              id="register-otp"
+              type="text"
+              inputmode="numeric"
+              autocomplete="one-time-code"
+              maxlength="6"
+              class="form-control" 
+              formControlName="otp" 
+              placeholder="Enter 6-digit OTP"
+              [class.is-invalid]="userForm.get('otp')?.invalid && userForm.get('otp')?.touched"
+              [disabled]="otpVerified"
+            />
+            <button 
+              class="btn-verify" 
+              type="button" 
+              (click)="verifyOtp()" 
+              [disabled]="otpVerified"
+              [class.verified]="otpVerified"
+            >
+              {{ otpVerified ? '✓ Verified' : 'Verify' }}
+            </button>
+          </div>
+          <div class="success-text" *ngIf="otpVerified">
+            ✓ Email verified successfully
+          </div>
+        </div>
+
+        <!-- PASSWORD -->
+        <div *ngIf="otpVerified" class="form-group form-group-full">
+          <label class="form-label" for="register-password">Password</label>
+          <div class="password-input-group">
+            <input 
+              id="register-password"
+              [type]="showPassword ? 'text' : 'password'"
+              class="form-control" 
+              formControlName="password"
+              placeholder="Create a strong password"
+              [class.is-invalid]="userForm.get('password')?.invalid && userForm.get('password')?.touched"
+            />
+            <button 
+              type="button" 
+              class="password-toggle-btn" 
+              (click)="togglePassword()"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+            >
+              <svg *ngIf="!showPassword" class="eye-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              <svg *ngIf="showPassword" class="eye-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20C5 20 1 12 1 12C1 12 2.64 8.53 6.06 6.06M9.9 4.24A9.12 9.12 0 0 1 12 4C19 4 23 12 23 12C23 12 21.27 15.47 17.94 17.94M9.9 4.24L17.94 17.94M9.9 4.24L3 3L17.94 17.94" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+          <small class="helper-text">Use uppercase, lowercase, numbers & symbols for security</small>
+          <div class="error-text" *ngIf="userForm.get('password')?.touched && userForm.get('password')?.invalid">
+            <div *ngIf="userForm.get('password')?.hasError('required')">
+              Password is required
+            </div>
+            <div *ngIf="userForm.get('password')?.hasError('minlength')">
+              Minimum 6 characters required
+            </div>
+          </div>
+        </div>
+
+        <!-- LOADER -->
+        <div *ngIf="loading" class="loader-section">
+          <div class="spinner-border"></div>
+          <p class="loader-text">Processing...</p>
+        </div>
+
+        <!-- RESPONSE MESSAGES -->
+        <div *ngIf="responseMessage" class="alert" [ngClass]="responseClass">
+          {{ responseMessage }}
+        </div>
+
+        <div *ngIf="submitDisabledReason" class="alert alert-info">
+          <span class="alert-icon">ℹ</span> {{ submitDisabledReason }}
+        </div>
+
+        <!-- SUBMIT BUTTON -->
+        <button 
+          class="btn-submit" 
+          type="submit" 
+          [disabled]="userForm.invalid || !otpVerified || loading"
+          [class.btn-disabled]="userForm.invalid || !otpVerified || loading"
+        >
+          <span *ngIf="!loading">Create Account</span>
+          <span *ngIf="loading">Creating...</span>
+        </button>
+
+        <!-- LOGIN LINK -->
+        <div class="auth-switch">
+          <span class="auth-text">Already have an account?</span>
+          <button type="button" class="btn-link" (click)="goHome()">
+            Sign In
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+  </div>
+</section>

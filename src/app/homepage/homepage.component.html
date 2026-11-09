@@ -1,0 +1,200 @@
+<div class="app-shell" *ngIf="user as currentUser">
+    <aside class="sidebar">
+      <a class="brand" routerLink="/home"><span class="brand-icon" aria-hidden="true">⌂</span> RoomMate</a>
+      <div class="house-label">YOUR HOUSEHOLD</div>
+      <div class="house-chip">
+        <span class="house-avatar" aria-hidden="true">⌂</span>
+        <span><b>My shared home</b><small>{{ data.roommates.length }} members</small></span>
+        <span class="dots" aria-hidden="true">•••</span>
+      </div>
+
+      <nav class="workspace-nav" aria-label="Household workspace">
+        <span class="nav-caption">WORKSPACE</span>
+        <button class="nav-item" [class.active]="activeTab === 'overview'" (click)="activeTab = 'overview'"><span aria-hidden="true">▦</span> Overview</button>
+        <button class="nav-item" (click)="focusAdd()"><span aria-hidden="true">＋</span> Add expense</button>
+        <button class="nav-item" [class.active]="activeTab === 'history'" (click)="activeTab = 'history'"><span aria-hidden="true">◷</span> Expense history</button>
+        <button class="nav-item" [class.active]="activeTab === 'roommates'" (click)="activeTab = 'roommates'"><span aria-hidden="true">♙</span> Roommates</button>
+        <button class="nav-item" (click)="exportExcel()"><span aria-hidden="true">⇩</span> Export for Excel</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="profile">
+          <div class="profile-avatar">{{ initials(currentUser.email) }}</div>
+          <span class="profile-copy"><b>{{ currentUser.email }}</b><small>Household member</small></span>
+          <button class="icon-btn" type="button" title="Sign out" aria-label="Sign out" (click)="logout()">↗</button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <a class="mobile-brand" routerLink="/home"><span aria-hidden="true">⌂</span> RoomMate</a>
+        <div class="breadcrumb">Workspace <span>/</span> <b>{{ activeTab === 'history' ? 'Expense history' : activeTab === 'roommates' ? 'Roommates' : 'Overview' }}</b></div>
+        <div class="top-actions">
+          <span class="online-dot" aria-hidden="true"></span>
+          <span class="sync-label">Saved in this browser</span>
+          <button class="avatar-small" type="button" [attr.aria-label]="'Signed in as ' + currentUser.email">{{ initials(currentUser.email) }}</button>
+        </div>
+      </header>
+
+      <div class="content" *ngIf="!loading">
+        <div class="local-storage-note" role="note">This demo stores household data in this browser only. It is not shared or synced across devices.</div>
+
+        <ng-container [ngSwitch]="activeTab">
+          <section *ngSwitchCase="'overview'">
+            <div class="welcome-row">
+              <div>
+                <span class="eyebrow purple">HOUSEHOLD OVERVIEW</span>
+                <h1>{{ greeting }}, {{ firstName }} <span class="wave" aria-hidden="true">✦</span></h1>
+                <p class="muted">Here's what's happening with your shared expenses.</p>
+              </div>
+              <label class="month-picker"><span>VIEWING MONTH</span><input type="month" [(ngModel)]="selectedMonth" name="overviewMonth" (change)="refreshView()"></label>
+            </div>
+
+            <section class="stat-grid" aria-label="Monthly household totals">
+              <article class="stat-card total">
+                <div class="stat-top"><span>Total household spend</span><span class="stat-icon">↗</span></div>
+                <strong>{{ totalForMonth | currency:'INR':'symbol':'1.0-0' }}</strong>
+                <small>{{ monthLabel }} · all shared expenses</small>
+                <div class="stat-line"><span [style.width.%]="totalForMonth ? 100 : 0"></span></div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-top"><span>Your equal share</span><span class="stat-icon lavender">♙</span></div>
+                <strong>{{ perPerson | currency:'INR':'symbol':'1.0-0' }}</strong>
+                <small>Split equally between {{ data.roommates.length }} people</small>
+                <div class="stat-foot"><span class="tiny-dot green"></span> Fair share calculated</div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-top"><span>Paid so far</span><span class="stat-icon mint">✓</span></div>
+                <strong>{{ paidTotal | currency:'INR':'symbol':'1.0-0' }}</strong>
+                <small>{{ paidCount }} of {{ data.roommates.length }} roommates marked paid</small>
+                <div class="progress"><span [style.width.%]="paidPercent"></span></div>
+              </article>
+              <article class="stat-card">
+                <div class="stat-top"><span>Still to collect</span><span class="stat-icon peach">◷</span></div>
+                <strong>{{ pendingTotal | currency:'INR':'symbol':'1.0-0' }}</strong>
+                <small>Pending roommate contributions</small>
+                <div class="stat-foot"><span class="tiny-dot orange"></span> {{ data.roommates.length - paidCount }} payments pending</div>
+              </article>
+            </section>
+
+            <div class="section-row">
+              <div><h2>Monthly breakdown</h2><p class="muted">See where your household money goes.</p></div>
+              <button class="text-button" type="button" (click)="activeTab = 'history'">View all expenses →</button>
+            </div>
+
+            <section class="dashboard-grid">
+              <article class="panel breakdown">
+                <div class="panel-head"><div><h3>Spending by category</h3><p class="muted">{{ monthLabel }} expense distribution</p></div><span class="pill">{{ monthExpenses.length }} entries</span></div>
+                <div class="category-list">
+                  <div class="category-row" *ngFor="let category of categoryBreakdown">
+                    <div class="cat-icon" [ngClass]="category.css">{{ category.icon }}</div>
+                    <div class="cat-main">
+                      <div class="cat-label"><b>{{ category.name }}</b><span>{{ category.amount | currency:'INR':'symbol':'1.0-0' }}</span></div>
+                      <div class="bar"><span [style.width.%]="category.percent" [ngClass]="category.css"></span></div>
+                    </div>
+                  </div>
+                  <div class="empty-inline" *ngIf="!monthExpenses.length">No expenses yet. Add your first shared expense.</div>
+                </div>
+              </article>
+
+              <article class="panel payments">
+                <div class="panel-head"><div><h3>Roommate payments</h3><p class="muted">Each person's {{ monthLabel }} share</p></div><span class="pill">Equal split</span></div>
+                <div class="member-list">
+                  <div class="member-row" *ngFor="let roommate of data.roommates">
+                    <div class="member-avatar" [ngClass]="avatarClass(roommate.id)">{{ initials(roommate.name) }}</div>
+                    <div class="member-info"><b>{{ roommate.name }}</b><small>{{ roommate.email || 'Household member' }}</small></div>
+                    <div class="member-amount"><b>{{ perPerson | currency:'INR':'symbol':'1.0-0' }}</b><button type="button" [class.paid-button]="isPaid(roommate.id)" [class.pending-button]="!isPaid(roommate.id)" (click)="togglePaid(roommate.id)">{{ isPaid(roommate.id) ? '✓ Paid' : 'Mark paid' }}</button></div>
+                  </div>
+                </div>
+                <div class="payment-note"><span aria-hidden="true">ⓘ</span> Payment status is tracked separately for each month.</div>
+              </article>
+            </section>
+
+            <div class="section-row add-heading" id="add-expense">
+              <div><h2>Recent expenses</h2><p class="muted">Latest transactions in your household.</p></div>
+              <button class="primary" type="button" (click)="showExpenseForm = !showExpenseForm">＋ Add expense</button>
+            </div>
+
+            <article class="panel expense-form" *ngIf="showExpenseForm">
+              <div class="panel-head"><h3>Add a shared expense</h3><button class="icon-btn" type="button" aria-label="Close expense form" (click)="showExpenseForm = false">✕</button></div>
+              <form class="expense-fields" (ngSubmit)="addExpense()">
+                <div><label for="expense-description">Description</label><input id="expense-description" name="description" [(ngModel)]="draft.description" maxlength="100" placeholder="e.g. Weekly groceries" required></div>
+                <div><label for="expense-category">Category</label><select id="expense-category" name="category" [(ngModel)]="draft.category"><option *ngFor="let category of categories" [ngValue]="category">{{ category }}</option></select></div>
+                <div><label for="expense-amount">Amount (₹)</label><input id="expense-amount" type="number" min="0.01" step="0.01" name="amount" [(ngModel)]="draft.amount" required></div>
+                <div><label for="expense-date">Date</label><input id="expense-date" type="date" name="date" [(ngModel)]="draft.date" [max]="today" required></div>
+                <div><label for="expense-paid-by">Paid by</label><select id="expense-paid-by" name="paidBy" [(ngModel)]="draft.paidBy"><option *ngFor="let roommate of data.roommates" [ngValue]="roommate.id">{{ roommate.name }}</option></select></div>
+                <div class="expense-submit"><button class="primary" type="submit">Save expense</button><button class="secondary" type="button" (click)="showExpenseForm = false">Cancel</button></div>
+              </form>
+            </article>
+
+            <article class="panel recent-panel">
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>EXPENSE</th><th>DATE</th><th>PAID BY</th><th>AMOUNT</th><th>PER PERSON</th></tr></thead>
+                  <tbody>
+                    <tr *ngFor="let expense of recentExpenses">
+                      <td><span class="expense-dot" [ngClass]="categoryCss(expense.category)"></span><b>{{ expense.description }}</b><small>{{ expense.category }}</small></td>
+                      <td>{{ expense.date | date:'dd MMM yyyy' }}</td>
+                      <td>{{ roommateName(expense.paidBy) }}</td>
+                      <td class="amount">{{ expense.amount | currency:'INR':'symbol':'1.2-2' }}</td>
+                      <td>{{ expense.amount / data.roommates.length | currency:'INR':'symbol':'1.2-2' }}</td>
+                    </tr>
+                    <tr *ngIf="!recentExpenses.length"><td colspan="5" class="empty-cell">No expenses recorded for this month yet.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+          </section>
+
+          <section *ngSwitchCase="'history'">
+            <div class="page-title">
+              <div><span class="eyebrow purple">YOUR RECORDS</span><h1>Expense history</h1><p class="muted">A complete view of your household spending.</p></div>
+              <div class="history-actions">
+                <input #excelInput type="file" accept=".csv,text/csv" hidden (change)="importExcel($event)">
+                <button class="secondary" type="button" (click)="excelInput.click()">↑ Import CSV</button>
+                <button class="primary" type="button" (click)="exportExcel()">⇩ Export for Excel</button>
+              </div>
+            </div>
+            <section class="stat-grid compact">
+              <article class="stat-card"><span class="muted">Year to date</span><strong>{{ yearTotal | currency:'INR':'symbol':'1.0-0' }}</strong><small>Total expenses in {{ year }}</small></article>
+              <article class="stat-card"><span class="muted">Your annual share</span><strong>{{ yearTotal / data.roommates.length | currency:'INR':'symbol':'1.0-0' }}</strong><small>Equal share across {{ data.roommates.length }} people</small></article>
+              <article class="stat-card"><span class="muted">Total transactions</span><strong>{{ yearExpenses.length }}</strong><small>Recorded expenses</small></article>
+            </section>
+            <article class="panel">
+              <div class="panel-head"><div><h3>{{ year }} transactions</h3><p class="muted">All expenses recorded for the selected year</p></div><label class="year-picker"><select aria-label="Select year" [(ngModel)]="year" name="historyYear"><option *ngFor="let option of yearOptions" [ngValue]="option">{{ option }}</option></select></label></div>
+              <div class="table-wrap">
+                <table>
+                  <thead><tr><th>EXPENSE</th><th>DATE</th><th>PAID BY</th><th>AMOUNT</th><th>PER PERSON</th></tr></thead>
+                  <tbody>
+                    <tr *ngFor="let expense of yearExpenses"><td><b>{{ expense.description }}</b><small>{{ expense.category }}</small></td><td>{{ expense.date | date:'dd MMM yyyy' }}</td><td>{{ roommateName(expense.paidBy) }}</td><td class="amount">{{ expense.amount | currency:'INR':'symbol':'1.2-2' }}</td><td>{{ expense.amount / data.roommates.length | currency:'INR':'symbol':'1.2-2' }}</td></tr>
+                    <tr *ngIf="!yearExpenses.length"><td colspan="5" class="empty-cell">No expenses for {{ year }} yet.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+            <article class="panel year-summary"><h3>Monthly totals · {{ year }}</h3><div class="months-grid"><div *ngFor="let month of monthlyTotals"><span>{{ month.label }}</span><b>{{ month.amount | currency:'INR':'symbol':'1.0-0' }}</b><div class="bar"><span [style.width.%]="month.percent"></span></div></div></div></article>
+          </section>
+
+          <section *ngSwitchCase="'roommates'">
+            <div class="page-title"><div><span class="eyebrow purple">THE HOUSEHOLD</span><h1>Roommates</h1><p class="muted">Manage the four people sharing your home.</p></div><button class="primary" type="button" (click)="saveNames()">Save changes</button></div>
+            <article class="panel">
+              <div class="panel-head"><div><h3>Household members</h3><p class="muted">Expenses are split equally across all four members.</p></div><span class="pill">{{ data.roommates.length }} members</span></div>
+              <div class="roommate-edit">
+                <div class="roommate-edit-row" *ngFor="let roommate of data.roommates; let index = index">
+                  <div class="member-avatar" [ngClass]="avatarClass(roommate.id)">{{ initials(roommate.name) }}</div>
+                  <div class="edit-fields"><label [for]="'roommate-name-' + index">Roommate name</label><input [id]="'roommate-name-' + index" [(ngModel)]="roommate.name" [name]="'name' + roommate.id" maxlength="80" required></div>
+                  <div class="edit-fields"><label [for]="'roommate-email-' + index">Email (optional)</label><input [id]="'roommate-email-' + index" [(ngModel)]="roommate.email" [name]="'email' + roommate.id" type="email" placeholder="roommate@email.com"></div>
+                </div>
+              </div>
+              <p class="hint">Names and expenses are saved only in this browser. Each person needs this same browser profile to see these records.</p>
+            </article>
+          </section>
+        </ng-container>
+
+        <div class="toast" *ngIf="notice" [class.toast-error]="noticeType === 'error'" role="status">
+          {{ notice }} <button type="button" aria-label="Dismiss message" (click)="notice = ''">×</button>
+        </div>
+      </div>
+    </main>
+</div>
